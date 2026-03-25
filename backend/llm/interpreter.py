@@ -1,17 +1,16 @@
-import google.generativeai as genai
 import os
+from groq import Groq
+from dotenv import load_dotenv
 
-# Configure Gemini
-genai.configure(
-    api_key="AIzaSyDInwKZuM-NMMgjc12yiZxUiTBTDIhhw5Q"
+load_dotenv()
+
+client = Groq(
+    api_key=os.getenv("GROQ_API_KEY")
 )
-
-# Use latest stable model
-model = genai.GenerativeModel("gemini-1.5-flash-latest")
 
 
 def interpret_query(query: str):
-
+    print("Accha Lawde")
     prompt = f"""
 You are a graph query planner.
 
@@ -26,26 +25,24 @@ Rules:
 - Return ONLY function name
 - No explanation
 - No extra text
-- If user asks about customer, return get_customer_info
 
 User Query:
 {query}
 """
 
     try:
-        response = model.generate_content(prompt)
+        response = client.chat.completions.create(
+            model="llama-3.1-8b-instant",
+            messages=[
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0
+        )
 
-        print("LLM RAW RESPONSE:", response.text)
+        plan = response.choices[0].message.content.strip().lower()
 
-        if not response or not response.text:
-            return "unknown"
-
-        plan = response.text.strip().lower()
-
-        # Debug (optional but useful)
         print("LLM PLAN:", plan)
 
-        # Safety cleanup
         if "products_with_most_billings" in plan:
             return "products_with_most_billings"
 
@@ -58,12 +55,8 @@ User Query:
         if "customer" in plan or "get_customer_info" in plan:
             return "get_customer_info"
 
-        # fallback heuristic
-        if "customer" in query.lower():
-            return "get_customer_info"
-
         return "unknown"
 
     except Exception as e:
-        print("Gemini Error:", e)
+        print("Groq Error:", e)
         return "unknown"

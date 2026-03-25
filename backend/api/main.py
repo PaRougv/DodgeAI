@@ -52,6 +52,8 @@ def get_graph():
 @app.post("/query")
 def query(body: dict):
 
+    print("Entered over here")
+
     global graph_engine
 
     # GRAPH NOT INITIALIZED
