@@ -7,7 +7,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from graph_query.engine import GraphEngine
 from llm.interpreter import interpret_query
 from llm.guardrails import validate
-from pathlib import Path
 
 import os
 
@@ -25,13 +24,11 @@ app.add_middleware(
 # GLOBAL GRAPH ENGINE
 graph_engine = None
 
-ROOT_DIR = Path(__file__).resolve().parents[2]
-DATA_DIR = ROOT_DIR / "data" / "sap-o2c-data"
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+DATA_DIR = os.path.join(BASE_DIR, "data", "sap-o2c-data")
 
 print("DATA DIR:", DATA_DIR)
-print("CURRENT DIR:", os.getcwd())
-print("BASE DIR:", BASE_DIR)
-print("FILES ROOT:", os.listdir(BASE_DIR))
+
 
 @app.get("/graph")
 def get_graph():
