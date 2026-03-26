@@ -24,12 +24,12 @@ app.add_middleware(
 # GLOBAL GRAPH ENGINE
 graph_engine = None
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+BASE_DIR = os.getcwd()
 DATA_DIR = os.path.join(BASE_DIR, "data", "sap-o2c-data")
 
+print("BASE_DIR:", BASE_DIR)
 print("DATA DIR:", DATA_DIR)
-print("PWD:", os.getcwd())
-print("ROOT LIST:", os.listdir("/app"))
+print("ROOT LIST:", os.listdir(BASE_DIR))
 
 @app.get("/graph")
 def get_graph():
