@@ -28,7 +28,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__fil
 DATA_DIR = os.path.join(BASE_DIR, "data", "sap-o2c-data")
 
 print("DATA DIR:", DATA_DIR)
-
+print("PWD:", os.getcwd())
+print("ROOT LIST:", os.listdir("/app"))
 
 @app.get("/graph")
 def get_graph():
