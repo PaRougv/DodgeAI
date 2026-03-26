@@ -8,6 +8,8 @@ from graph_query.engine import GraphEngine
 from llm.interpreter import interpret_query
 from llm.guardrails import validate
 
+import os
+
 
 app = FastAPI()
 
@@ -22,6 +24,11 @@ app.add_middleware(
 # GLOBAL GRAPH ENGINE
 graph_engine = None
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+DATA_DIR = os.path.join(BASE_DIR, "data", "sap-o2c-data")
+
+print("DATA DIR:", DATA_DIR)
+
 
 @app.get("/graph")
 def get_graph():
@@ -29,16 +36,45 @@ def get_graph():
     global graph_engine
 
     data = {
-        "business_partners": load_jsonl("C:/Developer/Develoment/DodgeAI/data/sap-o2c-data/business_partners/part-20251119-133435-168.jsonl"),
-        "business_partner_address": load_jsonl("C:/Developer/Develoment/DodgeAI/data/sap-o2c-data/business_partner_addresses/part-20251119-133436-580.jsonl"),
-        "sales_order_headers": load_jsonl("C:/Developer/Develoment/DodgeAI/data/sap-o2c-data/sales_order_headers/part-20251119-133429-440.jsonl"),
-        "sales_order_items": load_jsonl("C:/Developer/Develoment/DodgeAI/data/sap-o2c-data/sales_order_items/part-20251119-133429-452.jsonl"),
-        "outbound_delivery_items": load_jsonl("C:/Developer/Develoment/DodgeAI/data/sap-o2c-data/outbound_delivery_items/part-20251119-133431-439.jsonl"),
-        "billing_document_headers": load_jsonl("C:/Developer/Develoment/DodgeAI/data/sap-o2c-data/billing_document_headers/part-20251119-133433-228.jsonl"),
-        "billing_document_items": load_jsonl("C:/Developer/Develoment/DodgeAI/data/sap-o2c-data/billing_document_items/part-20251119-133432-233.jsonl"),
-        "billing_document_cancellation": load_jsonl("C:/Developer/Develoment/DodgeAI/data/sap-o2c-data/billing_document_cancellations/part-20251119-133433-51.jsonl"),
-        "journal_entry_items_accounts_receivable": load_jsonl("C:/Developer/Develoment/DodgeAI/data/sap-o2c-data/journal_entry_items_accounts_receivable/part-20251119-133433-74.jsonl"),
-        "payments_accounts_receivable": load_jsonl("C:/Developer/Develoment/DodgeAI/data/sap-o2c-data/payments_accounts_receivable/part-20251119-133434-100.jsonl"),
+        "business_partners": load_jsonl(
+            os.path.join(DATA_DIR, "business_partners", "part-20251119-133435-168.jsonl")
+        ),
+
+        "business_partner_address": load_jsonl(
+            os.path.join(DATA_DIR, "business_partner_addresses", "part-20251119-133436-580.jsonl")
+        ),
+
+        "sales_order_headers": load_jsonl(
+            os.path.join(DATA_DIR, "sales_order_headers", "part-20251119-133429-440.jsonl")
+        ),
+
+        "sales_order_items": load_jsonl(
+            os.path.join(DATA_DIR, "sales_order_items", "part-20251119-133429-452.jsonl")
+        ),
+
+        "outbound_delivery_items": load_jsonl(
+            os.path.join(DATA_DIR, "outbound_delivery_items", "part-20251119-133431-439.jsonl")
+        ),
+
+        "billing_document_headers": load_jsonl(
+            os.path.join(DATA_DIR, "billing_document_headers", "part-20251119-133433-228.jsonl")
+        ),
+
+        "billing_document_items": load_jsonl(
+            os.path.join(DATA_DIR, "billing_document_items", "part-20251119-133432-233.jsonl")
+        ),
+
+        "billing_document_cancellation": load_jsonl(
+            os.path.join(DATA_DIR, "billing_document_cancellations", "part-20251119-133433-51.jsonl")
+        ),
+
+        "journal_entry_items_accounts_receivable": load_jsonl(
+            os.path.join(DATA_DIR, "journal_entry_items_accounts_receivable", "part-20251119-133433-74.jsonl")
+        ),
+
+        "payments_accounts_receivable": load_jsonl(
+            os.path.join(DATA_DIR, "payments_accounts_receivable", "part-20251119-133434-100.jsonl")
+        ),
     }
 
     nodes, edges = build_graph(data)
@@ -82,7 +118,7 @@ def query(body: dict):
 
     elif "find_broken_flows" in plan:
         result = graph_engine.find_broken_flows()
-    
+
     elif "get_customer_info" in plan:
         customer_id = body.get("customer_id") or query
         result = graph_engine.get_customer_info(customer_id)
