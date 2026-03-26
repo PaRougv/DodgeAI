@@ -93,7 +93,7 @@ function App() {
   const [input, setInput] = useState("")
 
   useEffect(() => {
-    axios.get("http://localhost:8000/graph").then((res) => {
+    axios.get("https://dodge-ai-production-fb09.up.railway.app/graph").then((res) => {
       const rawNodes = res.data.nodes.map((n) => ({
         id: n.id,
         type: n.type,
@@ -141,7 +141,7 @@ function App() {
     if (!input.trim()) return;
 
     const res = await axios.post(
-      "http://localhost:8000/query",
+      "https://dodge-ai-production-fb09.up.railway.app/query",
       {
         query: input
       }
